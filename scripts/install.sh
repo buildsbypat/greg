@@ -15,7 +15,7 @@ SERVICE_NAME="${SERVICE_NAME:-greg-bot}"
 SERVICE_FILE="${SERVICE_FILE:-greg-bot.service}"
 
 RUNTIME_USER="${RUNTIME_USER:-gregbot}"
-DEPLOY_USER="${DEPLOY_USER:-deploygreg}"
+DEPLOY_USER="${DEPLOY_USER:-gregdeploy}"
 
 PYTHON_BIN=""
 DEPLOY_HOME=""
@@ -348,7 +348,7 @@ success "Python environment is ready"
 section "Writing runtime configuration"
 
 echo
-DISCORD_TOKEN="$(prompt "DISCORD_TOKEN: ")"
+DISCORD_TOKEN="$(prompt_secret "DISCORD_TOKEN: ")"
 echo
 
 run_task "Writing .env file" \
@@ -521,7 +521,7 @@ info_row "Secrets file" "${SECRETS_FILE}"
 info_row "Deploy host" "${DEPLOY_HOST}"
 info_row "Deploy user" "${DEPLOY_USER}"
 info_row "Deploy port" "22"
-info_row "GitHub page" "https://github.com//greg/settings/secrets/actions"
+info_row "GitHub page" "https://github.com/buildsbypat/greg/settings/secrets/actions"
 
 echo
 printf '%sNext steps%s\n' "${BOLD}" "${RESET}"
