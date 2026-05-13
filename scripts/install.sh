@@ -130,8 +130,8 @@ prompt_secret() {
   local value=""
 
   while true; do
-    read -r -s -p "${label}: " value
-    echo
+    read -r -s -p "${label}: " value </dev/tty
+    echo >/dev/tty
 
     if [[ -n "${value}" && ! "${value}" =~ [[:space:]] ]]; then
       printf '%s' "${value}"
