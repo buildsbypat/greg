@@ -216,7 +216,7 @@ run_task "Installing base packages" \
     rsync \
     software-properties-common
 
-if ! command -v python3.11 >/dev/null 2>&1; then
+if ! command -v python3.12 >/dev/null 2>&1; then
   if [[ -r /etc/os-release ]]; then
     # shellcheck source=/dev/null
     . /etc/os-release
@@ -232,12 +232,12 @@ if ! command -v python3.11 >/dev/null 2>&1; then
 fi
 
 run_task "Installing Python 3.11" \
-  apt-get install -y -qq python3.11 python3.11-venv
+  apt-get install -y -qq python3.12 python3.12-venv
 
-PYTHON_BIN="$(command -v python3.11)"
+PYTHON_BIN="$(command -v python3.12)"
 
 if ! "${PYTHON_BIN}" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 11) else 1)'; then
-  die "Python 3.11 or newer is required."
+  die "Python 3.12 or newer is required."
 fi
 
 success "System dependencies are ready"
