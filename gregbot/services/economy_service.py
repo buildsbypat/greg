@@ -248,7 +248,7 @@ class EconomyService:
             SET wallet = wallet + ?,
                 total_earned = total_earned + ?,
                 updated_at = ?
-            WHERE gulid_id = ?
+            WHERE guild_id = ?
             AND user_id = ?
             """,
             (amount, amount, now, guild_id, user_id),
@@ -265,7 +265,7 @@ class EconomyService:
             account=account,
             description=description,
         )
-        
+
         return account
     
     @staticmethod

@@ -12,7 +12,7 @@ from gregbot.utils.time import format_seconds
 
 def balance_view(
         *,
-        user: discord.abe.User,
+        user: discord.abc.User,
         result: BalanceResult,
         config: BotConfig,
 ) -> discord.ui.LayoutView:
@@ -50,7 +50,7 @@ def balance_view(
     return view
 
 def daily_view(
-        user: discord.abc.user,
+        user: discord.abc.User,
         result: DailyResult,
         config: BotConfig,
 ) -> discord.ui.LayoutView:

@@ -12,7 +12,7 @@ class EconomyAccount:
     total_spent: int
     total_lost: int
     created_at: str
-    updated_str: str
+    updated_at: str
 
     @property
     def net_worth(self) -> int:
