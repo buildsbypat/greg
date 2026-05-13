@@ -1,4 +1,4 @@
-from paulbot.app import main
+from gregbot.app import main
 
 if __name__ == "__main__":
     main()
