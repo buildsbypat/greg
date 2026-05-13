@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 
-set -euo pipefall
+set -euo pipefail
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 
-REPO_URL="${REPO_URL:-https://github.com/buildsbypat/paul.git}"
+REPO_URL="${REPO_URL:-https://github.com/buildsbypat/greg.git}"
 REPO_BRANCH="${REPO_BRANCH:-main}"
 
-APP_ROOT="${APP_ROOT:-/opt/paul}"
+APP_ROOT="${APP_ROOT:-/opt/greg}"
 APP_DIR="${APP_ROOT}/app"
 DATA_DIR="${APP_ROOT}/data"
 
-SERVICE_NAME="${SERVICE_NAME:-paul-bot}"
-SERVICE_FILE="${SERVICE_FILE:-paul-bot.service}"
+SERVICE_NAME="${SERVICE_NAME:-greg-bot}"
+SERVICE_FILE="${SERVICE_FILE:-greg-bot.service}"
 
-RUNTIME_USER="${RUNTIME_USER:-paul}"
-DEPLOY_USER="${DEPLOY_USER:-paul-deploy}"
+RUNTIME_USER="${RUNTIME_USER:-gregbot}"
+DEPLOY_USER="${DEPLOY_USER:-deploygreg}"
 
 PYTHON_BIN=""
 DEPLOY_HOME=""
@@ -79,8 +79,8 @@ command_row() {
 print_banner() {
   cat <<EOF
 
-${BOLD}Paul's Installer${RESET}
-${DIM}Paul's installer for Ubuntu servers.${RESET}
+${BOLD}greg's Installer${RESET}
+${DIM}greg's installer for Ubuntu servers.${RESET}
 
 EOF
 }
@@ -198,9 +198,6 @@ info_row "Service name" "${SERVICE_NAME}"
 info_row "Runtime user" "${RUNTIME_USER}"
 info_row "Deploy user" "${DEPLOY_USER}"
 info_row "Installer log" "${LOG_FILE}"
-
-warn "Discord channel IDs are configured in bot/channels.py."
-warn "Event windows and themes are configured in config/events.json."
 
 # ── 1. System packages ────────────────────────────────────────────────────────
 
@@ -351,16 +348,21 @@ success "Python environment is ready"
 section "Writing runtime configuration"
 
 echo
-DISCORD_TOKEN="$(prompt_secret "DISCORD_TOKEN (paste, hidden)")"
+DISCORD_TOKEN="$(prompt "DISCORD_TOKEN: ")"
 echo
 
-run_task "Writing environment file" \
+run_task "Writing .env file" \
   bash -c "
     {
       $(declare -f write_env_line)
       write_env_line 'DISCORD_TOKEN' '${DISCORD_TOKEN}'
-      write_env_line 'DATABASE_PATH' '${DATA_DIR}/paul.sqlite3'
-      write_env_line 'THRONE_POLL_INTERVAL_SECONDS' '60'
+      write_env_line 'DATABASE_PATH' '${DATA_DIR}/greg.sqlite3'
+      write_env_line 'BOT_PREFIX' 'g!'
+      write_env_line 'BOT_NAME' 'Greg'
+      write_env_line 'CURRENCY_SINGULAR' 'pickle'
+      write_env_line 'CURRENCY_PLURAL' 'pickles'
+      write_env_line 'CURRENCY_EMOJI' '🥒'
+      write_env_line 'LOG_LEVEL' 'INFO'
     } > '${APP_DIR}/.env'
   "
 
@@ -378,7 +380,7 @@ success "Runtime configuration saved"
 
 section "Preparing deployment access"
 
-DEPLOY_KEY_FILE="${DEPLOY_HOME}/.ssh/paul_deploy_ed25519"
+DEPLOY_KEY_FILE="${DEPLOY_HOME}/.ssh/greg_deploy_ed25519"
 
 run_task "Preparing deploy SSH directory" \
   install -d -m 700 -o "${DEPLOY_USER}" -g "${DEPLOY_GROUP}" "${DEPLOY_HOME}/.ssh"
@@ -390,7 +392,7 @@ if [[ ! -f "${DEPLOY_KEY_FILE}" ]]; then
       -t ed25519 \
       -f "${DEPLOY_KEY_FILE}" \
       -N "" \
-      -C "paul-deploy"
+      -C "greg-deploy"
 
   run_task "Securing deploy SSH key" \
     bash -c "
@@ -519,18 +521,15 @@ info_row "Secrets file" "${SECRETS_FILE}"
 info_row "Deploy host" "${DEPLOY_HOST}"
 info_row "Deploy user" "${DEPLOY_USER}"
 info_row "Deploy port" "22"
-info_row "GitHub page" "https://github.com/notpatdev/paul/settings/secrets/actions"
+info_row "GitHub page" "https://github.com//greg/settings/secrets/actions"
 
 echo
 printf '%sNext steps%s\n' "${BOLD}" "${RESET}"
-echo "  1. Add the generated deployment secrets to GitHub Actions."
-echo "  2. Review bot/channels.py for Discord channel IDs."
-echo "  3. Review config/events.json for event windows and themes."
-echo "  4. Push to ${REPO_BRANCH} or run the deployment workflow manually."
+echo "  1. Check logs, make sure it's didn't shit itself"
 
 echo
 warn "The deploy private key was not printed to the terminal."
 warn "Delete ${SECRETS_FILE} after adding the secrets to GitHub."
 
 echo
-success "paul the Bot is installed and ready."
+success "Greg installed and is ready"
