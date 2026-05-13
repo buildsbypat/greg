@@ -56,7 +56,7 @@ class EconomyCog(commands.Cog):
             mention_author=False,
         )
 
-    @commands.hybrid(name="daily", description="Claim your daily pickles.")
+    @commands.hybrid_command(name="daily", description="Claim your daily pickles.")
     async def daily(self, ctx: commands.Context) -> None:
         if ctx.guild is None:
             await ctx.reply("Greg only hands out pickles insides servers.", mention_author=False)
