@@ -70,7 +70,7 @@ class EconomyService:
                 created_at,
                 updated_at
             )
-            VALUES (?, ?, ?, 0, ?, 0, 0, ?, ?)
+            VALUES (?, ?, ?, ?, ?, 0, 0, ?, ?)
             """,
             (
                 guild_id,
