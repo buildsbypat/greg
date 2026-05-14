@@ -231,7 +231,7 @@ class EconomyService:
             amount=amount,
             work_message=message,
             job_name=job.name,
-            job_title=job.title,
+            job_title=title,
             footer=random.choice(job.footers)
         )
     
