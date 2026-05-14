@@ -21,6 +21,7 @@ DAILY_MIN = 150
 DAILY_MAX = 1000
 WORK_MIN = 50
 WORK_MAX = 200
+STARTING_JOB = None
 
 DAILY_COOLDOWN = timedelta(hours=24)
 WORK_COOLDOWN = timedelta(minutes=15)
@@ -57,10 +58,11 @@ class EconomyService:
                 total_earned,
                 total_spent,
                 total_lost,
+                current_job,
                 created_at,
                 updated_at
             )
-            VALUES (?, ?, ?, ?, ?, 0, 0, ?, ?)
+            VALUES (?, ?, ?, ?, ?, 0, 0, ?, ?, ?)
             """,
             (
                 guild_id,
@@ -68,6 +70,7 @@ class EconomyService:
                 STARTING_WALLET,
                 STARTING_BANK,
                 STARTING_WALLET,
+                STARTING_JOB,
                 now,
                 now,
             ),
@@ -100,6 +103,7 @@ class EconomyService:
                 total_earned,
                 total_spent,
                 total_lost,
+                current_job,
                 created_at,
                 updated_at
             FROM economy_accounts
