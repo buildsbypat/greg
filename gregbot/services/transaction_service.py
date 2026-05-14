@@ -25,7 +25,7 @@ class TransactionService:
             """
             INSERT INTO economy_transactions (
                 guild_id,
-                user_id
+                user_id,
                 other_user_id,
                 transaction_type,
                 amount,
