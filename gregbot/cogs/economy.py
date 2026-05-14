@@ -12,6 +12,8 @@ from gregbot.ui.economy_cards import (
     daily_view,
     leaderboard_view,
     work_view,
+    no_job_view,
+    find_job_view,
 )
 
 
