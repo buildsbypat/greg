@@ -42,6 +42,6 @@ jobs:
           .venv/bin/python -m pip install --upgrade pip --disable-pip-version-check
           .venv/bin/pip install -r requirements.txt --disable-pip-version-check
 
-          sudo systemctl restart greg-bot
-          sudo systemctl status greg-bot --no-pager
+          sudo -n /usr/bin/systemctl restart greg-bot
+          sudo -n /usr/bin/systemctl status greg-bot --no-pager
           EOF
