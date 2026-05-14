@@ -19,7 +19,7 @@ JOBS: tuple[Job, ...] = (
             "You delete a message and called it community management. Greg, while disappointed, gave you {amount}.",
             "You added the rule 'Don't hurt my kitten' to the rules. How did you get {amount} for that?",
             "You muted someone for saying 'first' in general. Greg considered finding a new job while handing you {amount}.",
-            "Kitten called you alpha on VC today. Excitedly you got {amount}."
+            "Kitten called you alpha on VC today. Excitedly you got {amount}.",
             "Greg is reconsidering his life choices hiring you. Legally, he had to give you {amount}.",
         ),
         footers=(
@@ -46,7 +46,7 @@ JOBS: tuple[Job, ...] = (
             "Turning it off and on worked... surprisingly. Greg gave you {amount}.",
             "You closed a tab on Chrome. You somehow got {amount} for that.",
             "Someone asked you to install Word. You did it and earned {amount}.",
-            "'Computer's get vaccines yeah?' The support center gave you {amount} for mental support."
+            "'Computer's get vaccines yeah?' The support center gave you {amount} for mental support.",
             "You got asked a question and lied about the answer. Surprisingly you got {amount}.",
         ),
         footers=(
