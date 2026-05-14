@@ -123,7 +123,7 @@ class EconomyService:
         account = await self.get_or_create_account(guild_id=guild_id, user_id=user_id)
         return BalanceResult(account=account)
     
-    async def get_job(self, key: str) -> Job | None:
+    def get_job(self, key: str) -> Job | None:
         return next((job for job in JOBS if job.key == key), None)
     
     async def find_job(self, *, guild_id: str, user_id: str) -> Job:
@@ -310,7 +310,11 @@ class EconomyService:
                 total_earned=int(row["total_earned"]),
                 total_spent=int(row["total_spent"]),
                 total_lost=int(row["total_lost"]),
-                current_job=str(row["current_job"]),
+                current_job=(
+                    str(row["current_job"])
+                    if row["current_job"] is not None
+                    else None
+                ),
                 created_at=str(row["created_at"]),
                 updated_at=str(row["updated_at"]),
         )

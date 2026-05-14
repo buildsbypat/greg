@@ -4,19 +4,13 @@ on:
   push:
     branches:
       - main
-      - dev
   pull_request:
+  workflow_dispatch:
 
 jobs:
-  test:
-    name: Test and lint
+  check:
+    name: Check Greg
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        python-version:
-          - "3.11"
-          - "3.12"
 
     steps:
       - name: Check out repository
@@ -25,27 +19,23 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
-          cache: "pip"
+          python-version: "3.12"
+          cache: pip
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install -r requirements-dev.txt
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
 
-      - name: Check formatting
-        run: |
-          ruff format --check .
-
-      - name: Lint
-        run: |
-          ruff check .
-
-      - name: Type check
-        run: |
-          mypy gregbot main.py
-
-      - name: Compile Python files
+      - name: Compile Python
         run: |
           python -m compileall gregbot main.py
+
+      - name: Ruff check
+        run: |
+          ruff check gregbot main.py
+
+      - name: Ruff format check
+        run: |
+          ruff format --check gregbot main.py

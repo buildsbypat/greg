@@ -231,7 +231,7 @@ if ! command -v python3.12 >/dev/null 2>&1; then
   fi
 fi
 
-run_task "Installing Python 3.11" \
+run_task "Installing Python 3.12" \
   apt-get install -y -qq python3.12 python3.12-venv
 
 PYTHON_BIN="$(command -v python3.12)"
