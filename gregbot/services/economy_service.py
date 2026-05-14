@@ -77,6 +77,7 @@ class EconomyService:
                 user_id,
                 STARTING_WALLET,
                 STARTING_BANK,
+                STARTING_WALLET,
                 now,
                 now,
             ),
