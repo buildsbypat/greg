@@ -203,7 +203,7 @@ class EconomyService:
         if account.current_job is None:
             return None
         
-        job = self._get_job(account.current_job)
+        job = self.get_job(account.current_job)
         if job is None:
             return None
         
