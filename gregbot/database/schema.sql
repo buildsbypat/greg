@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS economy_accounts (
     total_earned INTEGER NOT NULL DEFAULT 0,
     total_spent INTEGER NOT NULL DEFAULT 0,
     total_lost INTEGER NOT NULL DEFAULT 0,
+    current_job TEXT,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
     PRIMARY KEY (guild_id, user_id)

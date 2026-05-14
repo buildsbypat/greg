@@ -81,8 +81,12 @@ class EconomyCog(commands.Cog):
             )
             return
     
-    @commands.hybrid_command(name="work", description="Do some deeply questionable work.")
-    async def work(self, ctx: commands.Context) -> None:
+    @commands.hybrid_group(
+        name="work",
+        invoke_without_command=True,
+        description="Do some deeply questionable work.",
+    )
+    async def work_group(self, ctx: commands.Context) -> None:
         if ctx.guild is None:
             await ctx.reply("Greg only recognises work inside servers.", mention_author=False)
             return
@@ -92,6 +96,13 @@ class EconomyCog(commands.Cog):
             user_id=str(ctx.author.id),
         )
 
+        if result is None:
+            await ctx.reply(
+                view=no_job_view(),
+                mention_author=False,
+            )
+            return
+
         if isinstance(result, CooldownResult):
             await ctx.reply(
                 view=cooldown_view(result, self.config),
@@ -99,12 +110,26 @@ class EconomyCog(commands.Cog):
             )
             return
         
-        if isinstance(result, WorkResult):
-            await ctx.reply(
-                view=work_view(ctx.author, result, self.config),
-                mention_author=False,
-            )
+        await ctx.reply(
+            view=work_view(ctx.author, result, self.config),
+            mention_author=False,
+        )
+
+    @work_group.command(name="find", description="Find a somewhat questionable job")
+    async def work_find(self, ctx: commands.Context) -> None:
+        if ctx.guild is None:
+            await ctx.reply("Soz, jobs can only be found in servers.", mention_author=False)
             return
+
+        job = await self.economy.find_job(
+            guild_id=str(ctx.guild.id),
+            user_id=str(ctx.author.id),
+        )
+
+        await ctx.reply(
+            view=find_job_view(job, self.config),
+            mention_author=False,
+        )
     
     @commands.hybrid_command(
         name="leaderboard",

@@ -11,6 +11,7 @@ class EconomyAccount:
     total_earned: int
     total_spent: int
     total_lost: int
+    current_job: str | None
     created_at: str
     updated_at: str
 

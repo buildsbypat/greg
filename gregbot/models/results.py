@@ -26,6 +26,9 @@ class WorkResult:
     account: EconomyAccount
     amount: int
     work_message: str
+    job_name: str
+    job_title: str
+    footer: str
 
 @dataclass(frozen=True)
 class LeaderboardEntry:
@@ -33,3 +36,11 @@ class LeaderboardEntry:
     wallet: int
     bank: int
     net_worth: int
+
+@dataclass(frozen=True)
+class FindJobResult:
+    job_key: str
+    job_name: str
+    job_title: str
+    min_pay: int
+    max_pay: int

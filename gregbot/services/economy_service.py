@@ -9,8 +9,11 @@ from gregbot.config import BotConfig
 from gregbot.database.connection import Database
 from gregbot.models.economy import EconomyAccount
 from gregbot.models.results import BalanceResult, CooldownResult, DailyResult,  LeaderboardEntry, WorkResult
+from gregbot.models.jobs import Job
 from gregbot.services.cooldown_service import CooldownService
 from gregbot.services.transaction_service import TransactionService
+from gregbot.utils.money import format_currency
+from gregbot.services.jobs import JOBS
 
 STARTING_WALLET = 100
 STARTING_BANK = 0
@@ -22,38 +25,6 @@ WORK_MAX = 200
 DAILY_COOLDOWN = timedelta(hours=24)
 WORK_COOLDOWN = timedelta(minutes=15)
 
-WORK_MESSAGES = (
-    "Greg watched you pretend to work and decided that was close enough.",
-    "You alphabetised Greg's imaginary paperwork.",
-    "You found a suspicious pickle behind the vending machine.",
-    "Greg handed you a clipboard and called it professional development.",
-    "You fixed the office printer by sighing near it.",
-    "Greg asked you to sort tiny paperwork. You survived.",
-    "You attended a meeting that could have been a sentence.",
-    "You kicked the vending machine and it paid out in pickles.",
-    "The IT department was impressed you fixed your own issue.",
-    "You were the only person who turned up today. Greg noticed.",
-    "Greg saw you actually working. This has been reported.",
-    "You opened a spreadsheet and immediately looked important.",
-    "You replied to one email and called it a productive morning.",
-    "You moved a file from one folder to another. Greg was stunned.",
-    "You found loose pickles in the break room couch.",
-    "You restarted something and everyone called you a genius.",
-    "You carried a box across the room with serious intent.",
-    "You nodded during a meeting and somehow got paid.",
-    "You labelled a folder nobody will ever open.",
-    "Greg asked for a status update. You made one up convincingly.",
-    "You cleared your notifications and called it project work.",
-    "You turned it off and on again. Society owes you.",
-    "You found the missing stapler. Greg promoted you emotionally.",
-    "You updated a document title and called it version control.",
-    "You looked busy while Greg walked past.",
-    "You survived another shift in the pickle economy.",
-    "You fixed a problem by waiting until it fixed itself.",
-    "You said 'I'll look into it' and Greg believed you.",
-    "You opened the server rack and immediately closed it again.",
-    "You did one useful thing. Greg is still processing this.",
-)
 
 class EconomyService:
     def __init__(
@@ -148,6 +119,31 @@ class EconomyService:
         account = await self.get_or_create_account(guild_id=guild_id, user_id=user_id)
         return BalanceResult(account=account)
     
+    async def get_job(self, key: str) -> Job | None:
+        return next((job for job in JOBS if job.key == key), None)
+    
+    async def find_job(self, *, guild_id: str, user_id: str) -> Job:
+        account = await self.get_or_create_account(guild_id=guild_id, user_id=user_id)
+
+        available_jobs = list(JOBS)
+        job = random.choice(available_jobs)
+
+        now = datetime.now(UTC).isoformat()
+
+        await self.database.connection.execute(
+            """
+            UPDATE economy_accounts
+            SET current_job = ?,
+                updated_at = ?
+            WHERE guild_id = ?
+            AND user_id = ?
+            """,
+            (job.key, now, guild_id, user_id),
+        )
+        await self.database.connection.commit()
+
+        return job
+    
     async def claim_daily(
             self,
             *,
@@ -189,7 +185,7 @@ class EconomyService:
             *,
             guild_id: str,
             user_id: str,
-    ) -> WorkResult | CooldownResult:
+    ) -> WorkResult | CooldownResult | None:
         cooldown = await self.cooldowns.get_cooldown(
             guild_id=guild_id,
             user_id=user_id,
@@ -197,16 +193,25 @@ class EconomyService:
         )
         if cooldown is not None:
             return cooldown
-        
-        amount = random.randint(WORK_MIN, WORK_MAX)
-        work_message = random.choice(WORK_MESSAGES)
 
-        account = await self._add_wallet(
+        account = await self.get_or_create_account(guild_id=guild_id, user_id=user_id)
+
+        if account.current_job is None:
+            return None
+        
+        job = self._get_job(account.current_job)
+        if job is None:
+            return None
+        
+        amount = random.randint(job.min_pay, job.max_pay)
+        message = random.choice(job.success_messages).format(amount=format_currency(amount, config=self.config))
+
+        updated_account = await self._add_wallet(
             guild_id=guild_id,
             user_id=user_id,
             amount=amount,
             transaction_type="work",
-            description=work_message,
+            description=f"Worked as {job.name}",
         )
 
         await self.cooldowns.set_cooldown(
@@ -219,7 +224,10 @@ class EconomyService:
         return WorkResult(
             account=account,
             amount=amount,
-            work_message=work_message,
+            work_message=message,
+            job_name=job.name,
+            job_title=job.title,
+            footer=random.choice(job.footers)
         )
     
     async def get_leaderboard(self, *, guild_id: str, limit: int = 10) -> list[LeaderboardEntry]:
@@ -298,6 +306,7 @@ class EconomyService:
                 total_earned=int(row["total_earned"]),
                 total_spent=int(row["total_spent"]),
                 total_lost=int(row["total_lost"]),
+                current_job=str(row["current_job"]),
                 created_at=str(row["created_at"]),
                 updated_at=str(row["updated_at"]),
         )

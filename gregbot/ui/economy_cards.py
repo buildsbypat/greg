@@ -81,24 +81,39 @@ def work_view(
     result: WorkResult,
     config: BotConfig,
 ) -> discord.ui.LayoutView:
+    previous_wallet = result.account.wallet - result.amount
+
     view = discord.ui.LayoutView(timeout=60)
     view.add_item(
         make_container(
-            "🧾 Greg | Work",
-            f"{user.mention}, {result.work_message}",
+            result.job_title,
+            result.work_message,
+            accent_color=COLOR_GREG,
+            footer="Somehow this counts as employment.",
+        )
+    )
+    view.add_item(
+        make_container(
+            "Boring Stats",
+            "After working, here's what your pickle paycheck looks like:",
             sections=[
                 separator(),
                 text_block(
-                    "**Earned**\n"
-                    f"{format_currency(result.amount, config=config)}"
+                    "**Your Job: **"
+                    f"`{result.job_name}`"
                 ),
                 text_block(
-                    "**Wallet**\n"
-                    f"{format_currency(result.account.wallet, config=config)}"
+                    "**Total Pay: **"
+                    f"`{format_currency(result.amount, config=config)}`"
+                ),
+                text_block(
+                    "**Thy Wallet: **"
+                    f"`{format_currency(previous_wallet, config=config)}"
+                    f"→ {format_currency(result.account.wallet, config=config)}`"
                 ),
             ],
-            accent_color=COLOR_GREG,
-            footer="Somehow this counts as employment.",
+            accent_color=COLOR_INFO,
+            footer="Boring Stats",
         )
     )
     return view
@@ -136,4 +151,24 @@ def leaderboard_view(
         body,
         accent_color=COLOR_INFO,
         footer="Greg ranked the pickle hoarders.",
+    )
+
+def no_job_view() -> discord.ui.LayoutView:
+    return simple_view(
+        "Were you scared by the Job Application?",
+        "You don't have a job yet. Run `/work find` or `g!work find` and I guess I'll find you a job...",
+        accent_color=COLOR_WARNING,
+        footer="Greg does not reward unemployment.",
+    )
+
+def find_job_view(job: Job, config: BotConfig) -> discord.ui.LayoutView:
+    return simple_view(
+        "New job, who dis?",
+        (
+            f"Greg knew some people and got you a job as **{job.name}**.\n\n"
+            f"The jobs pays around {job.min_pay} - {format_currency(job.max_pay, config=config)} per shift.\n\n"
+            "Use `g!work` or `/work` to go work your new career."
+        ),
+        accent_color=COLOR_GREG,
+        footer="Greg wasn't asked for references. He just knew some people..."
     )

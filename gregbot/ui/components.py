@@ -36,7 +36,7 @@ def make_container(
     footer: str | None = None,
     accent_color: discord.Colour | int | None = None,
 ) -> discord.ui.Container:
-    header = f"## {title}"
+    header = f"### {title}"
     if body:
         header = f"{header}\n\n{body}"
 
@@ -46,6 +46,7 @@ def make_container(
         items.extend(sections)
 
     if footer:
+        items.append(separator())
         items.append(subtle(footer))
 
     return discord.ui.Container(*items, accent_color=_coerce_color(accent_color))
