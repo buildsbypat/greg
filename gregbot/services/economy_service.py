@@ -209,6 +209,7 @@ class EconomyService:
         
         amount = random.randint(job.min_pay, job.max_pay)
         message = random.choice(job.success_messages).format(amount=format_currency(amount, config=self.config))
+        title = random.choice(job.titles)
 
         updated_account = await self._add_wallet(
             guild_id=guild_id,
